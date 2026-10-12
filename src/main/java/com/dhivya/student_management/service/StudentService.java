@@ -3,6 +3,7 @@ package com.dhivya.student_management.service;
 import com.dhivya.student_management.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 import com.dhivya.student_management.entity.Student;
+import com.dhivya.student_management.exception.StudentNotFoundException;
 
 import java.util.*;
 
@@ -21,13 +22,21 @@ public class StudentService {
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
-    public Optional<Student> getStudentById(Long id) {
-        return studentRepository.findById(id);
+    public Student getStudentById(Long id) {
+        return studentRepository.findById(id)
+                .orElseThrow(() ->
+                        new StudentNotFoundException(
+                                "Student not found with id: " + id
+                        )
+                );
     }
     public Student updateStudent(Long id, Student updatedStudent) {
-
         Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() ->
+                        new StudentNotFoundException(
+                                "Student not found with id: " + id
+                        )
+                );
 
         existingStudent.setName(updatedStudent.getName());
         existingStudent.setEmail(updatedStudent.getEmail());
